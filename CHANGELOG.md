@@ -9,6 +9,8 @@ All notable changes to this project are documented here.
   type (CO₂, PM2.5, temperature, humidity, air quality), graph hours, language
   and a collapsible Thresholds section that shows each default. Empty fields
   use the defaults and are left out of the saved config.
+- `language: auto` follows the Home Assistant language, the same as leaving it
+  out.
 
 ## [1.2.0] - 2026-11-11
 

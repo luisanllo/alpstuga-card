@@ -122,7 +122,8 @@ class AlpstugaCard extends HTMLElement {
 
   // ---------- language ----------
   _setLanguage() {
-    const lang = String(this._config.language || this._hass.language || 'en').toLowerCase();
+    const own = this._config.language !== 'auto' && this._config.language;
+    const lang = String(own || this._hass.language || 'en').toLowerCase();
     this._t = AC_I18N[lang.slice(0, 2)] || AC_I18N.en;
     this._locale = (this._hass.locale && this._hass.locale.language) || this._hass.language || 'en';
   }
@@ -455,7 +456,8 @@ class AlpstugaCardEditor extends HTMLElement {
   }
 
   _t() {
-    const lang = String((this._config && this._config.language) || (this._hass && this._hass.language) || 'en').slice(0, 2);
+    const own = this._config && this._config.language !== 'auto' && this._config.language;
+    const lang = String(own || (this._hass && this._hass.language) || 'en').slice(0, 2);
     return AC_EDITOR_I18N[lang] || AC_EDITOR_I18N.en;
   }
 
@@ -473,7 +475,7 @@ class AlpstugaCardEditor extends HTMLElement {
       {
         type: 'grid', name: '', schema: [
           { name: 'hours', selector: num(1, 168) },
-          { name: 'language', selector: { select: { mode: 'dropdown', options: [{ value: '', label: t.auto }, { value: 'en', label: 'English' }, { value: 'es', label: 'Español' }] } } },
+          { name: 'language', selector: { select: { mode: 'dropdown', options: [{ value: 'auto', label: t.auto }, { value: 'en', label: 'English' }, { value: 'es', label: 'Español' }] } } },
         ],
       },
       {
@@ -496,7 +498,8 @@ class AlpstugaCardEditor extends HTMLElement {
     }
     const t = this._t();
     this._form.hass = this._hass;
-    this._form.data = this._config;
+    // "auto" is only shown in the form, so the dropdown never looks empty; it isn't saved.
+    this._form.data = { language: 'auto', ...this._config };
     this._form.schema = this._schema();
     this._form.computeLabel = (s) => t[s.name] || s.title || s.name;
     this._form.computeHelper = (s) => (s.name in AC_DEFAULTS ? t.default(AC_DEFAULTS[s.name]) : undefined);
@@ -505,6 +508,7 @@ class AlpstugaCardEditor extends HTMLElement {
   _changed(value) {
     const config = { ...value };
     for (const [k, v] of Object.entries(config)) if (v === '' || v === undefined || v === null) delete config[k];
+    if (config.language === 'auto') delete config.language;
     this._config = config;
     this.dispatchEvent(new CustomEvent('config-changed', { detail: { config }, bubbles: true, composed: true }));
   }

@@ -81,7 +81,7 @@ in for you.
 | `air_quality` | No | | The monitor's air quality sensor (Matter levels `good` … `extremely_poor`); without it the pill shows the CO₂ status |
 | `name` | No | `Air quality` | Title shown on the card |
 | `hours` | No | `24` | Hours of history in the graph |
-| `language` | No | Home Assistant's | `en` or `es` |
+| `language` | No | Home Assistant's | `en`, `es`, or `auto` for Home Assistant's |
 | `co2_warn` / `co2_alert` | No | `1000` / `1400` | CO₂ levels (ppm) where it turns amber ("Ventilate") and red ("High") |
 | `co2_max` | No | `2000` | CO₂ at the end of the gauge |
 | `pm25_warn` / `pm25_alert` | No | `15` / `35` | PM2.5 levels (µg/m³) for amber and red; 15 is the WHO 24 h guideline |
