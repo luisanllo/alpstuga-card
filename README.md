@@ -1,6 +1,6 @@
 # ALPSTUGA Air Quality Card
 
-[![hacs_badge](https://img.shields.io/badge/HACS-Custom-41BDF5.svg)](https://github.com/hacs/integration)
+[![Marketplace](https://img.shields.io/badge/Marketplace-Add%20from%20link-41BDF5.svg)](#installation)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/luisanllo/alpstuga-card/blob/main/LICENSE)
 [![GitHub release](https://img.shields.io/github/v/release/luisanllo/alpstuga-card)](https://github.com/luisanllo/alpstuga-card/releases)
 
@@ -30,7 +30,17 @@ temperature and humidity entities; only CO₂ is required.
 
 ## Installation
 
-### HACS (custom repository)
+### Marketplace (Home Assistant 2026.11 or later)
+
+The card isn't in the default catalog, so add it by its link:
+
+1. **Settings → Marketplace** → **Add from link** (adding a repository by link
+   needs your GitHub account connected to the Marketplace)
+2. Enter `https://github.com/luisanllo/alpstuga-card` (or `luisanllo/alpstuga-card`)
+3. Download **ALPSTUGA Air Quality Card**
+4. Reload the browser, then add the card to a dashboard
+
+### HACS (Home Assistant before 2026.11)
 
 1. **HACS** → ⋮ menu → **Custom repositories**
 2. Repository: `https://github.com/luisanllo/alpstuga-card`, type **Dashboard**
