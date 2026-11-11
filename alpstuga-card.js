@@ -13,7 +13,7 @@
 // language: en | es   (optional, default: the Home Assistant language)
 // Thresholds: co2_warn 1000, co2_alert 1400 ppm; pm25_warn 15, pm25_alert 35 µg/m³ (WHO 24 h guideline 15);
 // humidity comfort hum_low 40 – hum_high 60 %.
-const AC_VERSION = '1.3.0';
+const AC_VERSION = '1.3.1';
 
 const AC_COLORS = { good: '#22c55e', warn: '#f59e0b', bad: '#ef4444', neutral: 'var(--secondary-text-color)' };
 // Matter air quality enum, best to worst.

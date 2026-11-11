@@ -35,6 +35,10 @@ temperature and humidity entities; only CO₂ is required.
 
 The card isn't in the default catalog, so add it by its link:
 
+[![Open your Home Assistant instance and open this repository in the Marketplace.](https://my.home-assistant.io/badges/marketplace_repository.svg)](https://my.home-assistant.io/redirect/marketplace_repository/?owner=luisanllo&repository=alpstuga-card&category=plugin)
+
+Or by hand:
+
 1. **Settings → Marketplace** → **Add from link** (adding a repository by link
    needs your GitHub account connected to the Marketplace)
 2. Enter `https://github.com/luisanllo/alpstuga-card` (or `luisanllo/alpstuga-card`)

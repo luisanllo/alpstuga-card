@@ -2,6 +2,14 @@
 
 All notable changes to this project are documented here.
 
+## [1.3.1] - 2026-11-11
+
+### Added
+- HACS validation workflow, run on every push and daily, for the Marketplace
+  default catalog.
+- README: one-click button to open the repository in your Home Assistant
+  Marketplace.
+
 ## [1.3.0] - 2026-11-11
 
 ### Added
