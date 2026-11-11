@@ -27,6 +27,7 @@ temperature and humidity entities; only CO₂ is required.
 - 🌗 Follows Home Assistant's light/dark theme
 - 🌍 UI in English or Spanish, picked from your Home Assistant language
 - 🔎 When added from the card picker, finds your ALPSTUGA's sensors on its own
+- 🎨 Visual editor — no YAML required
 
 ## Installation
 
@@ -55,6 +56,8 @@ The card isn't in the default catalog, so add it by its link:
    - Type: JavaScript Module
 
 ## Configuration
+
+Add the card from the card picker and set it up in the visual editor, or in YAML:
 
 ```yaml
 type: custom:alpstuga-card

@@ -2,6 +2,14 @@
 
 All notable changes to this project are documented here.
 
+## [1.3.0] - 2026-11-11
+
+### Added
+- Visual editor: Home Assistant's own form, with sensor pickers filtered by
+  type (CO₂, PM2.5, temperature, humidity, air quality), graph hours, language
+  and a collapsible Thresholds section that shows each default. Empty fields
+  use the defaults and are left out of the saved config.
+
 ## [1.2.0] - 2026-11-11
 
 ### Added

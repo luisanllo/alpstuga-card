@@ -13,7 +13,7 @@
 // language: en | es   (optional, default: the Home Assistant language)
 // Thresholds: co2_warn 1000, co2_alert 1400 ppm; pm25_warn 15, pm25_alert 35 µg/m³ (WHO 24 h guideline 15);
 // humidity comfort hum_low 40 – hum_high 60 %.
-const AC_VERSION = '1.2.0';
+const AC_VERSION = '1.3.0';
 
 const AC_COLORS = { good: '#22c55e', warn: '#f59e0b', bad: '#ef4444', neutral: 'var(--secondary-text-color)' };
 // Matter air quality enum, best to worst.
@@ -38,6 +38,25 @@ const AC_I18N = {
 // graph and its min/max.
 const AC_CO2_FLOOR = 300;
 const AC_DEFAULTS = { hours: 24, co2_warn: 1000, co2_alert: 1400, co2_max: 2000, pm25_warn: 15, pm25_alert: 35, hum_low: 40, hum_high: 60 };
+// Visual editor labels.
+const AC_EDITOR_I18N = {
+  en: {
+    name: 'Name', co2: 'CO₂ sensor', pm25: 'PM2.5 sensor', temperature: 'Temperature sensor', humidity: 'Humidity sensor',
+    air_quality: 'Air quality sensor (the monitor\'s own verdict)', hours: 'Hours in the graph', language: 'Language',
+    auto: 'Automatic (Home Assistant language)', thresholds: 'Thresholds',
+    co2_warn: 'CO₂: ventilate from (ppm)', co2_alert: 'CO₂: high from (ppm)', co2_max: 'CO₂: end of the gauge (ppm)',
+    pm25_warn: 'PM2.5: elevated from (µg/m³)', pm25_alert: 'PM2.5: high from (µg/m³)', hum_low: 'Humidity: dry below (%)', hum_high: 'Humidity: humid above (%)',
+    default: (v) => `Default: ${v}`, required: 'Required',
+  },
+  es: {
+    name: 'Nombre', co2: 'Sensor de CO₂', pm25: 'Sensor de PM2.5', temperature: 'Sensor de temperatura', humidity: 'Sensor de humedad',
+    air_quality: 'Sensor de calidad del aire (el veredicto del propio monitor)', hours: 'Horas en la gráfica', language: 'Idioma',
+    auto: 'Automático (idioma de Home Assistant)', thresholds: 'Umbrales',
+    co2_warn: 'CO₂: ventilar desde (ppm)', co2_alert: 'CO₂: alto desde (ppm)', co2_max: 'CO₂: final del arco (ppm)',
+    pm25_warn: 'PM2.5: elevado desde (µg/m³)', pm25_alert: 'PM2.5: alto desde (µg/m³)', hum_low: 'Humedad: seco por debajo de (%)', hum_high: 'Humedad: húmedo por encima de (%)',
+    default: (v) => `Por defecto: ${v}`, required: 'Obligatorio',
+  },
+};
 
 const acEsc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
@@ -48,6 +67,10 @@ class AlpstugaCard extends HTMLElement {
     this._metric = 'co2';
     this._hist = {};
     this._histAt = 0;
+  }
+
+  static getConfigElement() {
+    return document.createElement('alpstuga-card-editor');
   }
 
   // Card picker: the first CO₂ sensor (an ALPSTUGA one if there is one) and the other sensors of the same device.
@@ -417,6 +440,77 @@ ha-card{padding:16px 16px 12px;overflow:hidden}
     </svg>`;
   }
 }
+
+// Visual editor: Home Assistant's own form (ha-form) with entity pickers filtered by sensor type, and the thresholds
+// in a collapsible section. Empty fields fall back to the defaults and are left out of the saved config.
+class AlpstugaCardEditor extends HTMLElement {
+  setConfig(config) {
+    this._config = { ...config };
+    this._render();
+  }
+
+  set hass(hass) {
+    this._hass = hass;
+    this._render();
+  }
+
+  _t() {
+    const lang = String((this._config && this._config.language) || (this._hass && this._hass.language) || 'en').slice(0, 2);
+    return AC_EDITOR_I18N[lang] || AC_EDITOR_I18N.en;
+  }
+
+  _schema() {
+    const t = this._t();
+    const sensor = (device_class) => ({ entity: { domain: 'sensor', device_class } });
+    const num = (min, max, step = 1) => ({ number: { min, max, step, mode: 'box' } });
+    return [
+      { name: 'name', selector: { text: {} } },
+      { name: 'co2', required: true, selector: sensor('carbon_dioxide') },
+      { name: 'pm25', selector: sensor('pm25') },
+      { name: 'temperature', selector: sensor('temperature') },
+      { name: 'humidity', selector: sensor('humidity') },
+      { name: 'air_quality', selector: sensor('enum') },
+      {
+        type: 'grid', name: '', schema: [
+          { name: 'hours', selector: num(1, 168) },
+          { name: 'language', selector: { select: { mode: 'dropdown', options: [{ value: '', label: t.auto }, { value: 'en', label: 'English' }, { value: 'es', label: 'Español' }] } } },
+        ],
+      },
+      {
+        type: 'expandable', name: '', title: t.thresholds, icon: 'mdi:tune-vertical', flatten: true, schema: [
+          { type: 'grid', name: '', schema: [{ name: 'co2_warn', selector: num(400, 5000, 50) }, { name: 'co2_alert', selector: num(400, 5000, 50) }] },
+          { name: 'co2_max', selector: num(1000, 10000, 100) },
+          { type: 'grid', name: '', schema: [{ name: 'pm25_warn', selector: num(1, 500) }, { name: 'pm25_alert', selector: num(1, 500) }] },
+          { type: 'grid', name: '', schema: [{ name: 'hum_low', selector: num(0, 100) }, { name: 'hum_high', selector: num(0, 100) }] },
+        ],
+      },
+    ];
+  }
+
+  _render() {
+    if (!this._hass || !this._config) return;
+    if (!this._form) {
+      this._form = document.createElement('ha-form');
+      this._form.addEventListener('value-changed', (e) => this._changed(e.detail.value));
+      this.appendChild(this._form);
+    }
+    const t = this._t();
+    this._form.hass = this._hass;
+    this._form.data = this._config;
+    this._form.schema = this._schema();
+    this._form.computeLabel = (s) => t[s.name] || s.title || s.name;
+    this._form.computeHelper = (s) => (s.name in AC_DEFAULTS ? t.default(AC_DEFAULTS[s.name]) : undefined);
+  }
+
+  _changed(value) {
+    const config = { ...value };
+    for (const [k, v] of Object.entries(config)) if (v === '' || v === undefined || v === null) delete config[k];
+    this._config = config;
+    this.dispatchEvent(new CustomEvent('config-changed', { detail: { config }, bubbles: true, composed: true }));
+  }
+}
+
+if (!customElements.get('alpstuga-card-editor')) customElements.define('alpstuga-card-editor', AlpstugaCardEditor);
 
 if (!customElements.get('alpstuga-card')) {
   customElements.define('alpstuga-card', AlpstugaCard);
