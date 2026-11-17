@@ -13,7 +13,7 @@
 // language: en | es   (optional, default: the Home Assistant language)
 // Thresholds: co2_warn 1000, co2_alert 1400 ppm; pm25_warn 15, pm25_alert 35 µg/m³ (WHO 24 h guideline 15);
 // humidity comfort hum_low 40 – hum_high 60 %.
-const AC_VERSION = '1.3.1';
+const AC_VERSION = '1.3.2';
 
 const AC_COLORS = { good: '#22c55e', warn: '#f59e0b', bad: '#ef4444', neutral: 'var(--secondary-text-color)' };
 // Matter air quality enum, best to worst.
@@ -101,6 +101,14 @@ class AlpstugaCard extends HTMLElement {
   setConfig(config) {
     if (!config || !config.co2) throw new Error('alpstuga-card: "co2" (the CO₂ sensor) is required');
     this._config = { ...AC_DEFAULTS, ...config };
+    // Every numeric option is coerced to a number here, once: card YAML gets pasted between users, and a string
+    // such as hours: '<img onerror=…>' must never reach the markup. Anything that isn't a finite number falls back
+    // to its default; hours must also be positive.
+    for (const k of Object.keys(AC_DEFAULTS)) {
+      const raw = this._config[k], n = Number(raw);
+      this._config[k] = raw !== null && raw !== '' && Number.isFinite(n) ? n : AC_DEFAULTS[k];
+    }
+    if (this._config.hours <= 0) this._config.hours = AC_DEFAULTS.hours;
     this._built = false;
     if (this._hass) this._render();
   }
@@ -399,7 +407,7 @@ ha-card{padding:16px 16px 12px;overflow:hidden}
     const unit = this._unit(m.entity);
     const t = this._t;
     const mm = vals.length ? `${t.min} ${this._fmt(Math.min(...vals), m.decimals)} · ${t.max} ${this._fmt(Math.max(...vals), m.decimals)} ${unit}` : '';
-    this._$('gh').innerHTML = `<b>${acEsc(m.label)}</b><span>· ${this._config.hours} h</span><span class="mm">${acEsc(mm)}</span>`;
+    this._$('gh').innerHTML = `<b>${acEsc(m.label)}</b><span>· ${acEsc(this._config.hours)} h</span><span class="mm">${acEsc(mm)}</span>`;
   }
 
   _updateGraph() {
@@ -433,7 +441,7 @@ ha-card{padding:16px 16px 12px;overflow:hidden}
     const col = m.key === 'temperature' ? 'var(--state-sensor-temperature-color,#f97316)' : m.key === 'humidity' ? '#3b82f6' : this._band(m.key, cur).color;
     this._g = { pts, t0, now, y, H, m, col }; // for the hover readout
     const id = `gr${Math.random().toString(36).slice(2, 8)}`;
-    body.innerHTML = `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" aria-label="${acEsc(m.label)} ${c.hours} h">
+    body.innerHTML = `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" aria-label="${acEsc(m.label)} ${acEsc(c.hours)} h">
       <defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${col}" stop-opacity=".28"/><stop offset="1" stop-color="${col}" stop-opacity="0"/></linearGradient></defs>
       ${shown.map((l) => `<line x1="0" x2="${W}" y1="${y(l).toFixed(1)}" y2="${y(l).toFixed(1)}" stroke="var(--secondary-text-color)" stroke-opacity=".35" stroke-dasharray="3 4" vector-effect="non-scaling-stroke"/>`).join('')}
       <path d="${d} V ${H} H ${x(pts[0][0]).toFixed(1)} Z" fill="url(#${id})" stroke="none"/>

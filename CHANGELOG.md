@@ -2,6 +2,14 @@
 
 All notable changes to this project are documented here.
 
+## [1.3.2] - 2026-11-17
+
+### Fixed
+- Numeric options (`hours` and the thresholds) are now coerced to numbers when
+  the config is set, and the graph hours are escaped where they are written into
+  markup, so a pasted config can't inject HTML. A value that isn't a number
+  falls back to its default.
+
 ## [1.3.1] - 2026-11-11
 
 ### Added
