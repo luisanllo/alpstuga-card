@@ -1,6 +1,6 @@
 # ALPSTUGA Air Quality Card
 
-[![Marketplace](https://img.shields.io/badge/Marketplace-Add%20from%20link-41BDF5.svg)](#installation)
+[![hacs_badge](https://img.shields.io/badge/HACS-Default-41BDF5.svg)](https://github.com/hacs/integration)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/luisanllo/alpstuga-card/blob/main/LICENSE)
 [![GitHub release](https://img.shields.io/github/v/release/luisanllo/alpstuga-card)](https://github.com/luisanllo/alpstuga-card/releases)
 
@@ -31,9 +31,20 @@ temperature and humidity entities; only CO₂ is required.
 
 ## Installation
 
-### Marketplace (Home Assistant 2026.11 or later)
+### Marketplace / HACS (recommended)
 
-The card isn't in the default catalog, so add it by its link:
+The card is in the default HACS catalog, which Home Assistant 2026.11 and
+later include as the **Marketplace**, so there's no custom repository to add.
+
+1. **Settings → Marketplace** (Home Assistant 2026.11 or later), or
+   **HACS** on older versions
+2. Search for **"ALPSTUGA Air Quality Card"** (or "ALPSTUGA") → Download
+3. Reload the browser, then add the card to a dashboard
+
+### By link (fallback)
+
+If the search doesn't find it (a new catalog entry can take a few hours to
+show up), open the repository directly:
 
 [![Open your Home Assistant instance and open this repository in the Marketplace.](https://my.home-assistant.io/badges/marketplace_repository.svg)](https://my.home-assistant.io/redirect/marketplace_repository/?owner=luisanllo&repository=alpstuga-card&category=plugin)
 
@@ -45,12 +56,8 @@ Or by hand:
 3. Download **ALPSTUGA Air Quality Card**
 4. Reload the browser, then add the card to a dashboard
 
-### HACS (Home Assistant before 2026.11)
-
-1. **HACS** → ⋮ menu → **Custom repositories**
-2. Repository: `https://github.com/luisanllo/alpstuga-card`, type **Dashboard**
-3. Search for **"ALPSTUGA Air Quality Card"** → Download
-4. Reload the browser, then add the card to a dashboard
+On HACS before Home Assistant 2026.11, add it under **HACS** → ⋮ menu →
+**Custom repositories** instead, with type **Dashboard**.
 
 ### Manual
 

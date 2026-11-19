@@ -2,6 +2,13 @@
 
 All notable changes to this project are documented here.
 
+## [Unreleased]
+
+### Changed
+- README: the card is now in the default HACS catalog (the Marketplace in
+  Home Assistant 2026.11 and later), so installation leads with searching for
+  it there; adding it by link stays as a fallback.
+
 ## [1.3.2] - 2026-11-17
 
 ### Fixed
